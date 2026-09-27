@@ -6,11 +6,12 @@ on:
     branches: [ "main" ]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -27,8 +28,6 @@ jobs:
       - name: Install Android SDK 35
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
-      # AGP 8.7.x requires Gradle 8.9 or newer; 8.9 is the minimum
-      # compatible version for this project.
       - name: Set up Gradle 8.9
         uses: gradle/actions/setup-gradle@v6
         with:
@@ -43,9 +42,15 @@ jobs:
       - name: Verify APK exists
         run: test -s app/build/outputs/apk/debug/app-debug.apk
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: ali-studio-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
-          if-no-files-found: error
+      - name: Prepare APK
+        run: cp app/build/outputs/apk/debug/app-debug.apk Ali-Studio.apk
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v1.0.${{ github.run_number }}"
+          gh release create "$TAG" Ali-Studio.apk \
+            --title "Ali Studio $TAG" \
+            --notes "نسخه ساخته‌شده و بررسی‌شده توسط GitHub Actions" \
+            --target "$GITHUB_SHA"
