@@ -11,3 +11,14 @@
 - R8/ProGuard برای Release.
 
 نکته: رندر متالیک فعلی Canvas-based است و PBR/GPU reflection واقعی نیست؛ با این حال چندمرحله‌ای است و صرفاً یک رنگ تخت نیست.
+
+## ساخت APK در GitHub Actions
+
+- Java: 17
+- Android SDK / compileSdk: 35
+- Android Gradle Plugin: 8.7.3
+- Gradle: 8.9
+- CI target: `assembleDebug`
+- خروجی: `app/build/outputs/apk/debug/app-debug.apk`
+
+این مسیر عمداً Debug APK را می‌سازد تا برای CI به keystore و امضای Release نیاز نباشد. نسخه Release برای انتشار در فروشگاه می‌تواند در مرحله بعد با keystore اختصاصی امضا شود.
